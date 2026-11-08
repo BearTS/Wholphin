@@ -34,9 +34,15 @@ jobs:
           KEY_PASSWORD: "${{ secrets.KEY_PASSWORD }}"
           KEY_STORE_PASSWORD: "${{ secrets.KEY_STORE_PASSWORD }}"
           SIGNING_KEY: "${{ secrets.SIGNING_KEY }}"
-          ORG_GRADLE_PROJECT_WholphinExtensionsUsername: "${{ secrets.EXTENSIONS_USERNAME }}"
-          ORG_GRADLE_PROJECT_WholphinExtensionsPassword: "${{ secrets.EXTENSIONS_PASSWORD }}"
-        run: ./gradlew assembleDefaultRelease
+          EXT_USER: "${{ secrets.EXTENSIONS_USERNAME }}"
+          EXT_PASS: "${{ secrets.EXTENSIONS_PASSWORD }}"
+        run: |
+          # Only when the token is there: an empty property still makes Gradle look for the extensions.
+          if [ -n "$EXT_USER" ] && [ -n "$EXT_PASS" ]; then
+            export ORG_GRADLE_PROJECT_WholphinExtensionsUsername="$EXT_USER"
+            export ORG_GRADLE_PROJECT_WholphinExtensionsPassword="$EXT_PASS"
+          fi
+          ./gradlew assembleDefaultRelease
       - name: Universal APK
         run: |
           apk=$(find app/build/outputs/apk -name '*universal*.apk' | head -1)
