@@ -133,6 +133,21 @@ class TvProviderWorker
                     )
                 Timber.v("Added %s", addedCount)
 
+                // Free My TV: refresh the ones already there (where you stopped, when you last watched), which were
+                // never updated before, so the home screen's Continue Watching showed stale progress.
+                val byId = currentItems.associateBy { it.internalProviderId }
+                potentialItemsToAdd
+                    .filter { it.id.toString() !in userRemovedIds }
+                    .forEach { item ->
+                        val existing = byId[item.id.toString()] ?: return@forEach
+                        context.contentResolver.update(
+                            TvContractCompat.buildWatchNextProgramUri(existing.id),
+                            convert(item).toContentValues(),
+                            null,
+                            null,
+                        )
+                    }
+
                 addOtherChannels()
 
                 Timber.d("Completed successfully")
@@ -202,8 +217,9 @@ class TvProviderWorker
                         dto.userData
                             ?.lastPlayedDate
                             ?.atZone(ZoneId.systemDefault())
-                            ?.toEpochSecond()
-                            ?: Date().time, // TODO
+                            ?.toInstant()
+                            ?.toEpochMilli()
+                            ?: Date().time, // milliseconds, as the column wants (it was given seconds)
                     )
 
                     setTitle(item.title)

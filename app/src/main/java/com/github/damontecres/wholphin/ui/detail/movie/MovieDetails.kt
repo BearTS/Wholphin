@@ -47,6 +47,7 @@ import com.github.damontecres.wholphin.ui.components.ContextMenuActions
 import com.github.damontecres.wholphin.ui.components.ContextMenuDialog
 import com.github.damontecres.wholphin.ui.components.ErrorMessage
 import com.github.damontecres.wholphin.ui.components.ExpandablePlayButtons
+import com.github.damontecres.wholphin.ui.components.FmtvPoster
 import com.github.damontecres.wholphin.ui.components.HeaderUtils
 import com.github.damontecres.wholphin.ui.components.LoadingPage
 import com.github.damontecres.wholphin.ui.components.Optional
@@ -326,12 +327,18 @@ fun MovieDetailsContent(
             modifier = Modifier.fillMaxSize(),
         ) {
             item {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(0.dp),
+                // Free My TV: the poster on the left, the details and buttons beside it
+                androidx.compose.foundation.layout.Row(
+                    horizontalArrangement = Arrangement.spacedBy(28.dp),
                     modifier =
                         Modifier
                             .fillMaxWidth()
                             .bringIntoViewRequester(bringIntoViewRequester),
+                ) {
+                FmtvPoster(movie, Modifier.padding(top = HeaderUtils.topPadding + 8.dp, start = 8.dp))
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(0.dp),
+                    modifier = Modifier.weight(1f),
                 ) {
                     MovieDetailsHeader(
                         preferences = preferences,
@@ -385,6 +392,7 @@ fun MovieDetailsContent(
                                 .padding(bottom = 16.dp)
                                 .focusRequester(focusRequesters[HEADER_ROW]),
                     )
+                }
                 }
             }
             state.people.letNotEmpty { people ->

@@ -372,6 +372,13 @@ fun SeriesDetailsContent(
                 modifier = Modifier,
             ) {
                 item {
+                  // Free My TV: the poster on the left, the details and buttons beside it
+                  Row(horizontalArrangement = Arrangement.spacedBy(28.dp), modifier = Modifier.fillMaxWidth()) {
+                  com.github.damontecres.wholphin.ui.components.FmtvPoster(
+                      series,
+                      Modifier.padding(top = HeaderUtils.topPadding + 8.dp, start = 8.dp),
+                  )
+                  Column(modifier = Modifier.weight(1f)) {
                     SeriesDetailsHeader(
                         series = series,
                         showLogo = preferences.appPreferences.interfacePreferences.showLogos,
@@ -505,6 +512,8 @@ fun SeriesDetailsContent(
                             )
                         }
                     }
+                  }
+                  }
                 }
                 item {
                     ItemRow(
