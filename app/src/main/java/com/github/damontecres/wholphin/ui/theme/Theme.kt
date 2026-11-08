@@ -1,8 +1,10 @@
 package com.github.damontecres.wholphin.ui.theme
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import com.github.damontecres.wholphin.preferences.AppThemeColors
 import com.github.damontecres.wholphin.ui.theme.colors.BlueThemeColors
@@ -52,6 +54,15 @@ fun WholphinTheme(
         ) {
             MaterialTheme(
                 colorScheme = colorScheme,
+                // Free My TV: rounder cards and dialogs
+                shapes =
+                    androidx.tv.material3.Shapes(
+                        extraSmall = RoundedCornerShape(6.dp),
+                        small = RoundedCornerShape(10.dp),
+                        medium = RoundedCornerShape(14.dp),
+                        large = RoundedCornerShape(20.dp),
+                        extraLarge = RoundedCornerShape(28.dp),
+                    ),
                 typography = AppTypography,
                 content = content,
             )
