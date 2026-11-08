@@ -496,7 +496,7 @@ fun PlaybackButton(
             painter = painterResource(iconRes),
             contentDescription = "",
             tint =
-                if (LocalTheme.current == AppThemeColors.OLED_BLACK) {
+                if (LocalTheme.current.let { it == AppThemeColors.OLED_BLACK || it == AppThemeColors.FREE_MY_TV }) {
                     LocalContentColor.current
                 } else {
                     MaterialTheme.colorScheme.onSurface
@@ -540,7 +540,7 @@ fun PlaybackFaButton(
             color =
                 if (textColor.isSpecified) {
                     textColor
-                } else if (LocalTheme.current == AppThemeColors.OLED_BLACK) {
+                } else if (LocalTheme.current.let { it == AppThemeColors.OLED_BLACK || it == AppThemeColors.FREE_MY_TV }) {
                     LocalContentColor.current
                 } else {
                     MaterialTheme.colorScheme.onSurface

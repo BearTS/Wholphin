@@ -79,6 +79,7 @@ fun SwitchColors(): SwitchColors {
         AppThemeColors.ORANGE,
         AppThemeColors.BOLD_BLUE,
         AppThemeColors.OLED_BLACK,
+        AppThemeColors.FREE_MY_TV,
         AppThemeColors.RED,
         AppThemeColors.BROWN,
         -> {

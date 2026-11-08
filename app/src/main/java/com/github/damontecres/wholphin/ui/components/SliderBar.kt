@@ -160,7 +160,13 @@ fun sliderActiveColor(focused: Boolean): Color {
             }
         }
 
-        AppThemeColors.OLED_BLACK -> {
+        AppThemeColors.OLED_BLACK,
+
+        AppThemeColors.FREE_MY_TV,
+
+        AppThemeColors.FREE_MY_TV,
+
+        -> {
             if (focused) {
                 MaterialTheme.colorScheme.primaryContainer
             } else {
@@ -196,7 +202,13 @@ fun sliderInactiveColor(focused: Boolean): Color {
             MaterialTheme.colorScheme.secondaryContainer.copy(alpha = .66f)
         }
 
-        AppThemeColors.OLED_BLACK -> {
+        AppThemeColors.OLED_BLACK,
+
+        AppThemeColors.FREE_MY_TV,
+
+        AppThemeColors.FREE_MY_TV,
+
+        -> {
             if (focused) {
                 MaterialTheme.colorScheme.tertiaryContainer
             } else {

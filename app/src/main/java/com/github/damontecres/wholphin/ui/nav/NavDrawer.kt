@@ -750,7 +750,7 @@ fun navItemColor(
     drawerOpen: Boolean,
 ): Color {
     val theme = LocalTheme.current
-    if (theme == AppThemeColors.OLED_BLACK) {
+    if ((theme == AppThemeColors.OLED_BLACK || theme == AppThemeColors.FREE_MY_TV)) {
         return when {
             selected && focused -> Color.Black
             selected && !drawerOpen -> Color.White.copy(alpha = .5f)
@@ -780,6 +780,7 @@ fun navItemColor(
 
                     AppThemeColors.BOLD_BLUE,
                     AppThemeColors.OLED_BLACK,
+                    AppThemeColors.FREE_MY_TV,
                     -> MaterialTheme.colorScheme.primary
                 }
             }

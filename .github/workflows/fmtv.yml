@@ -1,0 +1,50 @@
+# Free My TV fork: builds Wholphin FMTV (com.github.damontecres.wholphin.fmtv) on every push to the fork's branches
+# and uploads the universal APK as an artifact. Signed with the fork's own key (SIGNING_KEY, KEY_ALIAS, KEY_PASSWORD,
+# KEY_STORE_PASSWORD secrets), the same on every run, so later builds update in place with `adb install -r`.
+# The playback extensions (MPV, ffmpeg and AV1 decoders) come in when EXTENSIONS_USERNAME and EXTENSIONS_PASSWORD
+# (a classic GitHub token with read:packages) are set; without them ExoPlayer still plays and MPV is a stub.
+name: Build Wholphin FMTV
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [fmtv-design]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs='-Xmx12g -XX:MaxMetaspaceSize=1024m'"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0 # the version comes from the tags
+      - name: Upstream's tags
+        run: git fetch --tags https://github.com/damontecres/Wholphin.git || true
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Build
+        env:
+          KEY_ALIAS: "${{ secrets.KEY_ALIAS }}"
+          KEY_PASSWORD: "${{ secrets.KEY_PASSWORD }}"
+          KEY_STORE_PASSWORD: "${{ secrets.KEY_STORE_PASSWORD }}"
+          SIGNING_KEY: "${{ secrets.SIGNING_KEY }}"
+          ORG_GRADLE_PROJECT_WholphinExtensionsUsername: "${{ secrets.EXTENSIONS_USERNAME }}"
+          ORG_GRADLE_PROJECT_WholphinExtensionsPassword: "${{ secrets.EXTENSIONS_PASSWORD }}"
+        run: ./gradlew assembleDefaultRelease
+      - name: Universal APK
+        run: |
+          apk=$(find app/build/outputs/apk -name '*universal*.apk' | head -1)
+          echo "built: $apk"
+          "$ANDROID_SDK_ROOT/build-tools/$BUILD_TOOLS_VERSION/apksigner" verify --print-certs "$apk"
+          cp "$apk" WholphinFMTV.apk
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: WholphinFMTV
+          path: WholphinFMTV.apk
+          retention-days: 30

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Wholphin</string>
+    <string name="app_name" translatable="false">Wholphin FMTV</string>
     <string name="app_name_long" translatable="false">Wholphin</string>
 
     <string name="about">About</string>
@@ -636,8 +636,10 @@
         <item>@string/black</item>
         <item>@string/red</item>
         <item>@string/brown</item>
+        <item>@string/free_my_tv</item>
     </string-array>
 
+    <string name="free_my_tv" translatable="false">Free My TV</string>
     <string name="skip_ignore">Ignore</string>
     <string name="skip_automatically">Skip automatically</string>
     <string name="skip_ask">Ask to skip</string>

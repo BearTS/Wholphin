@@ -8,6 +8,7 @@ import com.github.damontecres.wholphin.preferences.AppThemeColors
 import com.github.damontecres.wholphin.ui.theme.colors.BlueThemeColors
 import com.github.damontecres.wholphin.ui.theme.colors.BoldBlueThemeColors
 import com.github.damontecres.wholphin.ui.theme.colors.BrownThemeColors
+import com.github.damontecres.wholphin.ui.theme.colors.FreeMyTvThemeColors
 import com.github.damontecres.wholphin.ui.theme.colors.GreenThemeColors
 import com.github.damontecres.wholphin.ui.theme.colors.OledThemeColors
 import com.github.damontecres.wholphin.ui.theme.colors.OrangeThemeColors
@@ -15,7 +16,7 @@ import com.github.damontecres.wholphin.ui.theme.colors.PurpleThemeColors
 import com.github.damontecres.wholphin.ui.theme.colors.RedThemeColors
 
 val LocalTheme =
-    compositionLocalOf<AppThemeColors> { AppThemeColors.PURPLE }
+    compositionLocalOf<AppThemeColors> { AppThemeColors.FREE_MY_TV }
 
 fun getThemeColors(appThemeColors: AppThemeColors): ThemeColors =
     when (appThemeColors) {
@@ -27,13 +28,14 @@ fun getThemeColors(appThemeColors: AppThemeColors): ThemeColors =
         AppThemeColors.BOLD_BLUE -> BoldBlueThemeColors
         AppThemeColors.RED -> RedThemeColors
         AppThemeColors.BROWN -> BrownThemeColors
+        AppThemeColors.FREE_MY_TV -> FreeMyTvThemeColors
         AppThemeColors.UNRECOGNIZED -> PurpleThemeColors
     }
 
 @Composable
 fun WholphinTheme(
     darkTheme: Boolean = true,
-    appThemeColors: AppThemeColors = AppThemeColors.PURPLE,
+    appThemeColors: AppThemeColors = AppThemeColors.FREE_MY_TV,
     content: @Composable () -> Unit,
 ) {
     val themeColors = getThemeColors(appThemeColors)
@@ -46,7 +48,7 @@ fun WholphinTheme(
     CompositionLocalProvider(LocalTheme provides appThemeColors) {
         androidx.compose.material3.MaterialTheme(
             colorScheme = if (darkTheme) themeColors.darkSchemeMaterial else themeColors.lightSchemeMaterial,
-            typography = androidx.compose.material3.Typography(),
+            typography = MaterialTypography,
         ) {
             MaterialTheme(
                 colorScheme = colorScheme,

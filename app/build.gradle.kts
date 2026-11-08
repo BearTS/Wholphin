@@ -72,7 +72,8 @@ configure<ApplicationExtension> {
     compileSdk = libs.versions.compileSdk.getInt()
 
     defaultConfig {
-        applicationId = "com.github.damontecres.wholphin"
+        // Free My TV fork: its own id, so it installs beside Wholphin from Google Play or GitHub.
+        applicationId = "com.github.damontecres.wholphin.fmtv"
         minSdk = libs.versions.minSdk.getInt()
         targetSdk = libs.versions.targetSdk.getInt()
         versionCode = gitTags.trim().lines().size
