@@ -749,7 +749,7 @@ class HomeDataService
                         }
                     }.getOrNull() ?: continue
                 val downloads = media.downloadStatus.orEmpty()
-                val size = downloads.sumOf { it.size ?: 0.0 }
+                val size = downloads.sumOf { it.propertySize ?: 0.0 }
                 val left = downloads.sumOf { it.sizeLeft ?: 0.0 }
                 val (state, color, progress) =
                     when {
