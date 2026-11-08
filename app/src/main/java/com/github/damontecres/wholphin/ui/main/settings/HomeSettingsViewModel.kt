@@ -281,7 +281,11 @@ class HomeSettingsViewModel
                         }
 
                         MetaRowType.DISCOVER -> {
-                            TODO()
+                            HomeRowConfigDisplay(
+                                id = id,
+                                title = ResStringProvider(R.string.fmtv_coming_to_jellyfin),
+                                config = HomeRowConfig.SeerrRequests(),
+                            )
                         }
                     }
                 updateState {
@@ -779,6 +783,10 @@ class HomeSettingsViewModel
                                 }
 
                                 is HomeRowConfig.CustomEndpoint -> {
+                                    it.config
+                                }
+
+                                is HomeRowConfig.SeerrRequests -> {
                                     it.config
                                 }
                             }

@@ -45,7 +45,9 @@ jobs:
           ./gradlew assembleDefaultRelease
       - name: Universal APK
         run: |
-          apk=$(find app/build/outputs/apk -name '*universal*.apk' | head -1)
+          find app/build/outputs/apk -name '*.apk' -exec ls -la {} \;
+          # The universal APK (every ABI): the largest one
+          apk=$(find app/build/outputs/apk -name '*.apk' -printf '%s %p\n' | sort -n | tail -1 | cut -d' ' -f2-)
           echo "built: $apk"
           "$ANDROID_SDK_ROOT/build-tools/$BUILD_TOOLS_VERSION/apksigner" verify --print-certs "$apk"
           cp "$apk" WholphinFMTV.apk

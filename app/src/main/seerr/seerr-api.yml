@@ -1327,6 +1327,34 @@ components:
           type: string
         jellyfinMediaId4k:
           type: string
+        downloadStatus:
+          type: array
+          readOnly: true
+          nullable: true
+          description: What Radarr or Sonarr is downloading for it now (Free My TV fork)
+          items:
+            $ref: '#/components/schemas/DownloadingItem'
+    DownloadingItem:
+      type: object
+      properties:
+        mediaType:
+          type: string
+        externalId:
+          type: integer
+        size:
+          type: number
+          format: double
+        sizeLeft:
+          type: number
+          format: double
+        status:
+          type: string
+        timeLeft:
+          type: string
+        estimatedCompletionTime:
+          type: string
+        title:
+          type: string
     Cast:
       type: object
       properties:

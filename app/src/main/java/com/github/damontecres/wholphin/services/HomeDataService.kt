@@ -33,6 +33,7 @@ import com.github.damontecres.wholphin.util.GetStudiosRequestHandler
 import com.github.damontecres.wholphin.util.HomeRowLoadingState
 import com.github.damontecres.wholphin.util.HomeRowLoadingState.Success
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.decodeFromStream
@@ -62,6 +63,9 @@ import org.jellyfin.sdk.model.api.request.GetPersonsRequest
 import org.jellyfin.sdk.model.api.request.GetRecordingsRequest
 import org.jellyfin.sdk.model.api.request.GetStudiosRequest
 import timber.log.Timber
+import java.time.Duration
+import java.time.Instant
+import com.github.damontecres.wholphin.ui.main.SeerrRequestCard
 import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -77,6 +81,7 @@ class HomeDataService
         private val latestNextUpService: LatestNextUpService,
         private val imageUrlService: ImageUrlService,
         private val suggestionService: SuggestionService,
+        private val seerrService: SeerrService,
     ) {
         /**
          * Fetch the data from the server for a given [HomeRowConfig]
@@ -685,6 +690,18 @@ class HomeDataService
                     }
                 }
 
+                is HomeRowConfig.SeerrRequests -> {
+                    val title = ResStringProvider(R.string.fmtv_coming_to_jellyfin)
+                    val cards =
+                        try {
+                            seerrRequestCards(limit)
+                        } catch (ex: Exception) {
+                            Timber.w(ex, "Seerr requests")
+                            listOf()
+                        }
+                    Success(title, listOf(), row.viewOptions, rowType = row, showViewMore = false, requests = cards)
+                }
+
                 is HomeRowConfig.CustomEndpoint -> {
                     val title = StringStringProvider(row.title)
                     try {
@@ -698,6 +715,87 @@ class HomeDataService
                     }
                 }
             }
+
+        /**
+         * Free My TV: your Seerr requests, newest first, as the home row's cards. Titles already on Jellyfin show for
+         * three days after they arrive ("Ready"), then leave the row.
+         */
+        private suspend fun seerrRequestCards(limit: Int): List<SeerrRequestCard> {
+            if (!seerrService.active.first()) return listOf()
+            val requests =
+                seerrService.api.requestApi
+                    .requestGet(take = 40)
+                    .results
+                    .orEmpty()
+            val recent = Instant.now().minus(Duration.ofDays(3))
+            val seen = mutableSetOf<String>()
+            val cards = mutableListOf<SeerrRequestCard>()
+            for (request in requests) {
+                if (cards.size >= limit) break
+                val media = request.media ?: continue
+                val tmdbId = media.tmdbId ?: continue
+                if (!seen.add("${request.type}_$tmdbId")) continue
+                val available = media.status == 5
+                if (available) {
+                    val updated = (media.updatedAt ?: request.updatedAt)?.let { runCatching { Instant.parse(it) }.getOrNull() }
+                    if (updated == null || updated.isBefore(recent)) continue
+                }
+                val item =
+                    runCatching {
+                        if (request.type == "tv") {
+                            seerrService.createDiscoverItem(seerrService.api.tvApi.tvTvIdGet(tvId = tmdbId))
+                        } else {
+                            seerrService.createDiscoverItem(seerrService.api.moviesApi.movieMovieIdGet(movieId = tmdbId))
+                        }
+                    }.getOrNull() ?: continue
+                val downloads = media.downloadStatus.orEmpty()
+                val size = downloads.sumOf { it.size ?: 0.0 }
+                val left = downloads.sumOf { it.sizeLeft ?: 0.0 }
+                val (state, color, progress) =
+                    when {
+                        available -> {
+                            Triple("Ready on Jellyfin", 0xFF5DD39EL, 1f)
+                        }
+
+                        size > 0 -> {
+                            val done = (1 - left / size).coerceIn(0.0, 1.0)
+                            val timeLeft = downloads.firstNotNullOfOrNull { it.timeLeft?.let(::minutesLeft) }
+                            val text =
+                                "Downloading · ${(done * 100).toInt()}%" + (timeLeft?.let { " · $it" } ?: "")
+                            Triple(text, 0xFF7CC4FFL, done.toFloat())
+                        }
+
+                        media.status == 4 -> {
+                            Triple("Partly on Jellyfin", 0xFFC9CDD3L, 0.5f)
+                        }
+
+                        request.status == 1 -> {
+                            Triple("Waiting for approval", 0xFFFFD60AL, 0.04f)
+                        }
+
+                        request.status == 3 -> {
+                            Triple("Declined", 0xFFFF6B6BL, 0f)
+                        }
+
+                        else -> {
+                            Triple("Approved · waiting for the download", 0xFF7CC4FFL, 0.04f)
+                        }
+                    }
+                cards.add(SeerrRequestCard(item, item.title ?: "", state, color, progress))
+            }
+            return cards
+        }
+
+        /** Radarr's and Sonarr's "1.02:03:04" or "00:18:21" as "18 min left" (null when nothing is left to say). */
+        private fun minutesLeft(timeLeft: String): String? {
+            val parts = timeLeft.split('.', ':').mapNotNull { it.toDoubleOrNull() }
+            if (parts.size < 3) return null
+            val days = if (parts.size >= 4) parts[0] else 0.0
+            val (h, m, sec) = parts.takeLast(3)
+            val minutes = ((days * 86400 + h * 3600 + m * 60 + sec) / 60).toLong()
+            if (minutes <= 0) return null
+            return if (minutes < 60) "$minutes min left" else "${minutes / 60} h ${minutes % 60} min left"
+        }
 
         private suspend fun fetchCustomEndpointItems(row: HomeRowConfig.CustomEndpoint): List<BaseItemDto> {
             val base =

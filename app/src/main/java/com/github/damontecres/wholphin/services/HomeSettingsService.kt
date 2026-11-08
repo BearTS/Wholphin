@@ -317,7 +317,15 @@ class HomeSettingsService
                         config = HomeRowConfig.ContinueWatchingCombined(),
                     ),
                 )
-            val rowConfig = continueWatchingRow + includedIds
+            val seerrRow =
+                listOf(
+                    HomeRowConfigDisplay(
+                        id = includedIds.size + 2,
+                        title = ResStringProvider(R.string.fmtv_coming_to_jellyfin),
+                        config = HomeRowConfig.SeerrRequests(),
+                    ),
+                )
+            val rowConfig = continueWatchingRow + seerrRow + includedIds
             return HomePageResolvedSettings(userId, HomePageSettingsSource.DEFAULT, rowConfig)
         }
 
@@ -563,7 +571,15 @@ class HomeSettingsService
                     )
                 }
 
-                is HomeRowConfig.CustomEndpoint -> {
+is HomeRowConfig.SeerrRequests -> {
+                    HomeRowConfigDisplay(
+                        id = id,
+                        title = ResStringProvider(R.string.fmtv_coming_to_jellyfin),
+                        config,
+                    )
+                }
+
+                                is HomeRowConfig.CustomEndpoint -> {
                     HomeRowConfigDisplay(
                         id = id,
                         title = StringStringProvider(config.title),

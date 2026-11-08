@@ -98,7 +98,7 @@ enum class MetaRowType(
     NEXT_UP(R.string.next_up),
     COMBINED_CONTINUE_WATCHING(R.string.combine_continue_next),
     FAVORITES(R.string.favorites),
-    DISCOVER(R.string.discover),
+    DISCOVER(R.string.fmtv_coming_to_jellyfin),
     COLLECTION(R.string.collection),
     PLAYLIST(R.string.playlist),
 }

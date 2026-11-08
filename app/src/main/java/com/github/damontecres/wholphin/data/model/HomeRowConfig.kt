@@ -212,6 +212,18 @@ sealed interface HomeRowConfig {
     ) : HomeRowConfig {
         override fun updateViewOptions(viewOptions: HomeRowViewOptions): CustomEndpoint = this.copy(viewOptions = viewOptions)
     }
+
+    /**
+     * Free My TV: your Seerr requests that aren't on Jellyfin yet (or just arrived), with Radarr's or Sonarr's
+     * download progress. Moves, hides and comes back like any other row.
+     */
+    @Serializable
+    @SerialName("FmtvSeerrRequests")
+    data class SeerrRequests(
+        override val viewOptions: HomeRowViewOptions = HomeRowViewOptions(),
+    ) : HomeRowConfig {
+        override fun updateViewOptions(viewOptions: HomeRowViewOptions): SeerrRequests = this.copy(viewOptions = viewOptions)
+    }
 }
 
 @Serializable

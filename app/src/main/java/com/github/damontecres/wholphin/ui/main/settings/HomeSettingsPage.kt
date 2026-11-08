@@ -169,7 +169,7 @@ fun HomeSettingsPage(
                                             }
 
                                             MetaRowType.DISCOVER -> {
-                                                backStack.add(HomeSettingsDestination.ChooseDiscover)
+                                                addRow { viewModel.addRow(it) }
                                             }
 
                                             MetaRowType.COLLECTION -> {
@@ -262,7 +262,7 @@ fun HomeSettingsPage(
                             }
 
                             HomeSettingsDestination.ChooseDiscover -> {
-                                TODO()
+                                // Not used: Coming to your Jellyfin is added straight from Add Row
                             }
 
                             HomeSettingsDestination.ChooseFavorite -> {

@@ -68,6 +68,8 @@ sealed interface HomeRowLoadingState {
         val viewOptions: HomeRowViewOptions = HomeRowViewOptions(),
         val rowType: HomeRowConfig? = null,
         val showViewMore: Boolean = true,
+        /** Free My TV's Seerr row ([HomeRowConfig.SeerrRequests]): its cards; items stay empty. */
+        val requests: List<com.github.damontecres.wholphin.ui.main.SeerrRequestCard> = emptyList(),
     ) : HomeRowLoadingState
 
     data class Error(

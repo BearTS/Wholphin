@@ -214,6 +214,8 @@ fun HomePage(
                 }
 
             HomePageContent(
+                headerComposable = { focusedItem -> FmtvHomeHeader(item = focusedItem, greeting = true) },
+                onClickRequest = { viewModel.navigationManager.navigateTo(Destination.DiscoveredItem(it)) },
                 homeRows = homeRows,
                 position = position,
                 onFocusPosition = onFocusPosition,
@@ -299,6 +301,7 @@ fun HomePageContent(
         )
     },
     onClickViewMore: (RowColumn, HomeRowLoadingState.Success) -> Unit = { _, _ -> },
+    onClickRequest: (com.github.damontecres.wholphin.data.model.DiscoverItem) -> Unit = {},
 ) {
     val focusedItem =
         remember(homeRows, position) {
@@ -402,7 +405,21 @@ fun HomePageContent(
                                 }
 
                                 is HomeRowLoadingState.Success -> {
-                                    if (row.items.isNotEmpty()) {
+                                    if (row.rowType is HomeRowConfig.SeerrRequests) {
+                                        // Free My TV: Coming to your Jellyfin (Seerr), hidden while it's empty
+                                        if (row.requests.isNotEmpty()) {
+                                            SeerrRequestsRow(
+                                                title = row.title.getString(),
+                                                requests = row.requests,
+                                                onClick = onClickRequest,
+                                                modifier =
+                                                    rowModifier
+                                                        .fillMaxWidth()
+                                                        .focusGroup()
+                                                        .focusRequester(rowFocusRequesters[rowIndex]),
+                                            )
+                                        }
+                                    } else if (row.items.isNotEmpty()) {
                                         val viewOptions = row.viewOptions
                                         ItemRow(
                                             title = row.title.getString(),
@@ -544,39 +561,8 @@ fun HomePageHeader(
     showLogo: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val isEpisode = item?.type == BaseItemKind.EPISODE
-    val title =
-        remember(item?.id) {
-            when (item?.type) {
-                BaseItemKind.EPISODE,
-                BaseItemKind.SEASON,
-                -> item.data.seriesName
-
-                else -> item?.title
-            }
-        }
-    val subtitle =
-        remember(item?.id) {
-            when (item?.type) {
-                BaseItemKind.SEASON,
-                BaseItemKind.EPISODE,
-                -> item.name
-
-                else -> null
-            }
-        }
-    HomePageHeader(
-        title = title,
-        subtitle = subtitle,
-        overview = item?.data?.overview,
-        overviewTwoLines = isEpisode,
-        quickDetails = item?.ui?.quickDetails,
-        timeRemaining = item?.timeRemainingOrRuntime,
-        endsAt = item?.data?.endDate,
-        showLogo = showLogo,
-        logoImageUrl = rememberLogoUrl(item),
-        modifier = modifier,
-    )
+    // Free My TV: the focused title as a wide card (taller than HeaderUtils' fixed height); the greeting only on Home
+    FmtvHomeHeader(item = item, greeting = false)
 }
 
 @Composable

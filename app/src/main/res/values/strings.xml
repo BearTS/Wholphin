@@ -640,6 +640,7 @@
     </string-array>
 
     <string name="free_my_tv" translatable="false">Free My TV</string>
+    <string name="fmtv_coming_to_jellyfin">Coming to your Jellyfin</string>
     <string name="skip_ignore">Ignore</string>
     <string name="skip_automatically">Skip automatically</string>
     <string name="skip_ask">Ask to skip</string>
